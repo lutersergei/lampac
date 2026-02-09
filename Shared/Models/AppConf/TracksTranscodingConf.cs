@@ -21,6 +21,8 @@ namespace Shared.Models.AppConf
 
         public string[] allowHosts { get; set; } = Array.Empty<string>();
 
+        public bool allowPrivateHosts { get; set; }
+
         public TranscodingHlsOptions hlsOptions { get; set; } = new();
 
         public TranscodingAudioOptions audioOptions { get; set; } = new();

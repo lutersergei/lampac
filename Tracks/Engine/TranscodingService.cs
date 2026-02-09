@@ -427,6 +427,11 @@ namespace Tracks.Engine
                     return false;
                 }
             }
+            else if (!UrlPolicy.IsAllowed(uri, config.allowHosts, config.allowPrivateHosts))
+            {
+                error = "Source host is not allowed";
+                return false;
+            }
 
             return true;
         }

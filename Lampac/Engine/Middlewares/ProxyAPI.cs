@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Shared;
 using Shared.Engine;
+using Shared.Engine.Utilities;
 using Shared.Models;
 using Shared.Models.Proxy;
 using System;
@@ -100,6 +101,28 @@ namespace Lampac.Engine.Middlewares
             if (string.IsNullOrWhiteSpace(servUri) || !servUri.StartsWith("http"))
             {
                 httpContext.Response.StatusCode = 404;
+                return;
+            }
+
+            if (!Uri.TryCreate(servUri, UriKind.Absolute, out var targetUri) ||
+                (targetUri.Scheme != Uri.UriSchemeHttp && targetUri.Scheme != Uri.UriSchemeHttps))
+            {
+                httpContext.Response.StatusCode = 404;
+                return;
+            }
+
+            if (decryptLink == null && !init.encrypt)
+            {
+                if (init.allowHosts == null || init.allowHosts.Length == 0)
+                {
+                    httpContext.Response.StatusCode = 403;
+                    return;
+                }
+            }
+
+            if (!UrlPolicy.IsAllowed(targetUri, init.allowHosts, init.allowPrivateHosts))
+            {
+                httpContext.Response.StatusCode = 403;
                 return;
             }
 

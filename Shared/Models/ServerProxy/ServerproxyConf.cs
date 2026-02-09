@@ -1,4 +1,5 @@
 ﻿using Shared.Models.Base;
+using System;
 
 namespace Shared.Models.ServerProxy
 {
@@ -15,6 +16,10 @@ namespace Shared.Models.ServerProxy
         public bool showOrigUri { get; set; }
 
         public bool responseContentLength { get; set; }
+
+        public string[] allowHosts { get; set; } = Array.Empty<string>();
+
+        public bool allowPrivateHosts { get; set; }
 
         public ServerproxyImageConf image { get; set; } = new ServerproxyImageConf();
 

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Shared;
 using Shared.Engine;
+using Shared.Engine.Utilities;
 using Shared.Models;
 using System;
 using System.Buffers;
@@ -118,6 +119,28 @@ namespace Lampac.Engine.Middlewares
                 if (string.IsNullOrWhiteSpace(href) || !href.StartsWith("http"))
                 {
                     httpContext.Response.StatusCode = 404;
+                    return;
+                }
+
+                if (!Uri.TryCreate(href, UriKind.Absolute, out var targetUri) ||
+                    (targetUri.Scheme != Uri.UriSchemeHttp && targetUri.Scheme != Uri.UriSchemeHttps))
+                {
+                    httpContext.Response.StatusCode = 404;
+                    return;
+                }
+
+                if (decryptLink == null && !AppInit.conf.serverproxy.encrypt)
+                {
+                    if (AppInit.conf.serverproxy.allowHosts == null || AppInit.conf.serverproxy.allowHosts.Length == 0)
+                    {
+                        httpContext.Response.StatusCode = 403;
+                        return;
+                    }
+                }
+
+                if (!UrlPolicy.IsAllowed(targetUri, AppInit.conf.serverproxy.allowHosts, AppInit.conf.serverproxy.allowPrivateHosts))
+                {
+                    httpContext.Response.StatusCode = 403;
                     return;
                 }
                 #endregion

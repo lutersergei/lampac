@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.Engine;
+using Shared.Engine.Utilities;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -109,6 +110,10 @@ namespace Tracks.Controllers
                     if (!Uri.TryCreate(media, UriKind.Absolute, out var uri) ||
                         (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
                         return showerror ? "uri" : "{}";
+
+                    var transcodeConf = AppInit.conf.transcoding;
+                    if (!UrlPolicy.IsAllowed(uri, transcodeConf.allowHosts, transcodeConf.allowPrivateHosts))
+                        return showerror ? "host" : "{}";
 
                     var process = new System.Diagnostics.Process();
                     process.StartInfo.UseShellExecute = false;
