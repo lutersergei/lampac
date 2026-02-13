@@ -106,6 +106,44 @@ ip:9118/admin
 2. Настройки Jackett в module/JacRed.conf (пример JacRed.example.conf)
 3. Основные настройки в init.conf (пример example.conf)
 
+# Безопасность: allowHosts / allowPrivateHosts
+
+Эти параметры контролируют доступ к внешним URL и защищают от SSRF/доступа к локальной сети:
+
+* `allowHosts` — явный allowlist доменов. Если задан (не пустой), будут разрешены только эти хосты.
+* `allowPrivateHosts` — разрешить приватные/локальные адреса (по умолчанию `false`).
+
+### Прокси (serverproxy)
+
+В `init.conf`:
+
+```json
+"serverproxy": {
+  "enable": true,
+  "encrypt": false,
+  "allowHosts": ["example.com", "cdn.example.com"],
+  "allowPrivateHosts": false
+}
+```
+
+* Если `encrypt=false`, то без `allowHosts` прокси будет блокировать запросы.
+* Для доступа к локальным/приватным хостам нужно явно включить `allowPrivateHosts=true`.
+
+### Транскодинг/ffprobe
+
+В `init.conf`:
+
+```json
+"transcoding": {
+  "enable": true,
+  "allowHosts": ["media.example.com"],
+  "allowPrivateHosts": false
+}
+```
+
+* Если `allowHosts` не задан, доступ к приватным/локальным хостам блокируется.
+* Для проксирования внутреннего контента (LAN) включайте `allowPrivateHosts=true`.
+
 # Источники онлайн
 
 Filmix, KinoPub, Alloha, Rezka, GetsTV, iptv.online, Kinobase, Zetflix, Collaps, Lumex, VDBmovies, VideoDB, Vibix, Videoseed, VeoVeo, HDVB, Kodik, Ashdi (Украинский), Eneyida (Украинский), KinoUKR (Украинский), FanCDN, Kinotochka, CDNmovies, Redheadsound, VoKino, Rutube, VK Видео, Plvideo, Anilibria, AniLiberty, AniMedia, AnimeLib, MoonAnime (Украинский), Animevost, Animebesst, AnimeGo, HydraFlix (ENG), VidSrc (ENG), MovPI (ENG), Videasy (ENG), 2Embed (ENG), VidLink (ENG), AutoEmbed (ENG), SmashyStream (ENG), PlayEmbed (ENG), RgShows (ENG)
